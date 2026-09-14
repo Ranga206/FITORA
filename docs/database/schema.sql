@@ -1,0 +1,21 @@
+-- ==============================================================================
+-- FITORA DATABASE SCHEMA (PLACEHOLDER)
+-- ==============================================================================
+-- Notice: This file is intentionally a placeholder for future implementation.
+-- Database table creation DDL, constraints, and indexes will be generated
+-- after entity modeling and database engine selection are finalized.
+--
+-- DO NOT EXECUTE OR FILL WITH PRODUCTION SCHEMA UNTIL APPROVED.
+-- ==============================================================================
+
+-- TODO: [Decision Needed] Finalize target SQL dialect (PostgreSQL vs. MySQL)
+-- TODO: [Decision Needed] Finalize primary key strategy (UUID vs BIGSERIAL)
+-- TODO: [Decision Needed] Implement core schema tables:
+--   1. Users & Authentication (users, roles, tokens)
+--   2. User Profiles & Biometrics (user_profiles, user_settings)
+--   3. Nutrition Domain (food_items, meals, meal_items)
+--   4. Fitness Domain (exercises, workouts, workout_sets)
+--   5. Awareness Domain (lessons, user_lesson_progress)
+--   6. Habit Domain (habits, habit_logs)
+--   7. Gamification Domain (user_gamification, achievements, leagues, league_members)
+-- ==============================================================================

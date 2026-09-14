@@ -1,222 +1,196 @@
 # Fitora
 
-### Eat Better • Move Better • Live Better
+### Eat Better • Move Better • Live Better (PROPOSED — NOT APPROVED)
 
-Fitora is a wellness and lifestyle platform that combines
-nutrition, fitness, habit tracking, educational content,
-progress tracking, and gamification in one application.
+Fitora is a wellness and lifestyle platform built around three core pillars—**Nutrition**, **Fitness**, and **Awareness**—supported by **Habit Tracking**, **Progress Analytics**, and **Gamification**.
 
-The goal is to help users build healthier and more consistent
-lifestyle habits through personalized guidance, tracking,
-education, and engaging challenges.
+The goal is to help users build healthier and more consistent lifestyle habits through personalized guidance, tracking, education, and engaging challenges.
 
 ---
 
 ## 🚀 Project Vision
 
-Most fitness and nutrition applications focus on only one area.
+Most fitness and nutrition applications focus on only one isolated area.
 
-Fitora brings multiple aspects of wellness together:
+Fitora brings the fundamental elements of wellness together in a unified experience:
 
-- Nutrition and meal planning
-- Calorie and nutrition tracking
-- Fitness and workout guidance
-- Daily habit tracking
-- Lifestyle improvement
-- Progress and analytics
-- Fitness and nutrition education
-- Streaks and achievements
-- XP and levels
-- Challenges
-- Competitive leagues
+- **Nutrition & Meal Planning**: Understand caloric requirements, plan meals, and log food.
+- **Fitness & Workout Guidance**: Exercise directory, structured workouts, and session tracking.
+- **Awareness & Education**: Learn the *why* behind habits, nutrition, and physical activity.
+- **Daily Habit Tracking**: Monitor hydration, consistency, sleep, and personal wellness routines.
+- **Progress & Analytics**: Weekly and monthly trend visualization across all pillars.
+- **Gamification**: Streaks, XP, levels, achievements, challenges, and competitive leagues.
 
-Instead of simply showing information, Fitora encourages users
-to consistently act on it.
+Instead of simply showing passive information, Fitora inspires and encourages users to consistently act on it.
 
 ---
 
 ## 🎯 Problem
 
-People often use separate applications for:
+People often juggle multiple separate applications:
 
-- Diet and meal planning
-- Calorie tracking
-- Workout planning
-- Habit tracking
-- Fitness education
-- Progress monitoring
+- One app for diet and meal planning
+- One app for calorie tracking
+- One app for workout planning and logging
+- One app for daily habit reminders
+- Scattered websites for health and fitness articles
+- Fragmented spreadsheets for monitoring long-term progress
 
-This makes it difficult to maintain a consistent lifestyle
-routine.
-
-Fitora aims to bring these experiences together in one
-easy-to-use platform.
+This fragmentation creates cognitive overload, friction, and high dropout rates. Fitora solves this by integrating these workflows into a cohesive, balanced platform.
 
 ---
 
 ## 💡 Proposed Solution
 
-Fitora provides a unified wellness platform where users can:
+Fitora provides a unified platform where users can:
 
-1. Create a personal profile
-2. Set wellness and fitness goals
-3. Understand their nutritional requirements
-4. Plan and track meals
-5. Learn about nutrition and fitness
-6. Follow workout plans
-7. Track daily habits
-8. Monitor their progress
-9. Maintain streaks
-10. Earn XP and achievements
-11. Participate in challenges
-12. Progress through leagues
+1. Create a personal profile and define realistic wellness goals.
+2. Calculate BMI context and estimate personalized daily caloric needs.
+3. Plan and log daily meals and macronutrients.
+4. Discover exercises and track workouts with set/rep/weight logging.
+5. Gain awareness through educational articles explaining the science behind lifestyle habits.
+6. Track custom and preset daily lifestyle habits.
+7. Monitor holistic progress across nutrition, fitness, and habits.
+8. Build streaks and earn XP for positive daily actions.
+9. Unlock achievements and join seasonal challenges.
+10. Compete in weekly leagues focused on healthy consistency.
 
 ---
 
-## ⭐ Core Features
+## ⭐ The Three Core Pillars
 
-### 🥗 Nutrition
+Fitora is anchored by three primary pillars:
 
+### 1. 🥗 Nutrition
 - User nutrition profile
-- BMI-based nutritional context
-- Calorie estimation
-- Meal planning
-- Food information
-- Meal tracking
-- Nutrition progress
+- BMI-based nutritional context (used strictly as an initial screening/context metric, never a medical diagnosis)
+- Daily calorie and macronutrient estimation
+- Meal planning and food library
+- Meal tracking and logging
+- Basic nutrition education
 
-> BMI is used only as a general screening/input metric and
-> should not be treated as a medical diagnosis.
+### 2. 🏋️ Fitness
+- Exercise education and library
+- Structured workout guidance and categories
+- Workout tracking (exercises, sets, reps, weight, duration)
+- Workout history and logs
+- Consistency and frequency tracking
 
-### 🏋️ Fitness
+### 3. 🧠 Awareness
+- Educational articles and bite-sized lessons
+- Nutrition awareness and dietary concepts
+- Fitness awareness and training principles
+- Lifestyle awareness (sleep, recovery, hydration, stress)
+- Helping users understand **WHY** certain choices matter, not merely **WHAT** to do
 
-- Exercise information
-- Workout plans
-- Workout tracking
-- Exercise categories
-- Workout progress
-- Fitness education
+---
+
+## ⚙️ Supporting Systems
+
+To reinforce the three core pillars and sustain long-term adherence:
 
 ### ✅ Habit Tracking
+- Daily habit checklists (hydration, workouts, nutrition, reading, sleep)
+- Custom user-defined habits
+- Completion status and streak recording
 
-Users can track daily lifestyle actions such as:
+### 📈 Progress Tracking
+- Daily, weekly, and monthly activity trends
+- Calorie and nutrition adherence curves
+- Workout frequency and volume metrics
+- Habit consistency rates
 
-- Nutrition consistency
-- Workout completion
-- Hydration
-- Learning
-- Other custom habits
-
-### 📈 Progress
-
-Users can view:
-
-- Daily progress
-- Weekly trends
-- Monthly trends
-- Nutrition progress
-- Workout consistency
-- Habit consistency
-- Goal progress
-
-### 🔥 Gamification
-
-Fitora uses game-inspired systems to encourage consistency:
-
-- Daily streaks
-- XP
-- Levels
-- Achievements
-- Challenges
-- League rankings
-
-Gamification is designed to encourage healthy consistency,
-not extreme dieting or excessive exercise.
+### 🔥 Gamification & Leagues
+- **XP (Experience Points)**: Awarded for healthy daily actions (logging meals, completing workouts, reading lessons).
+- **Levels**: Progressive milestones reflecting cumulative effort.
+- **Streaks**: Daily consistency indicators.
+- **Achievements & Badges**: Earned for hitting consistency milestones.
+- **Challenges**: Time-bound personal and community goals.
+- **Competitive Leagues**: Tiered rankings (e.g., Bronze, Silver, Gold) rewarding consistent healthy participation—not extreme dieting or overtraining.
 
 ---
 
-## 🏆 League System
+## 🔮 Scope Boundaries & Future Scope
 
-Users can participate in leagues based on activity and
-consistency.
+| In Current Scope (Initial Releases) | Future Scope (Optional Extensions) |
+| :--- | :--- |
+| Core Pillars (Nutrition, Fitness, Awareness) | 🤖 **AI-Driven Personalization & Automated Generation** |
+| Habit & Progress Tracking | ⌚ **Direct Wearable Hardware Sync (Garmin, Apple Watch)** |
+| Gamification, XP, Streaks, Leagues | 🌐 **Public Social Feed & Media Sharing** |
+| Web Application (REST API + Relational DB) | 📱 **Native Mobile Apps (iOS/Android)** |
 
-Example progression:
-
-Daily Actions
-      ↓
-    XP
-      ↓
-   Level
-      ↓
-Achievements
-      ↓
- Challenges
-      ↓
-    League
-
-The league system focuses on engagement and consistency rather
-than body measurements or appearance.
+> **Important**: Artificial Intelligence (AI) is **NOT** part of the initial implementation. All initial tracking, formulas, and recommendations are based on established dietary calculations and structured content libraries. AI is reserved as a future optional extension.
 
 ---
 
-## 🖥️ Main Application Modules
+## 🏗️ System Architecture Overview
 
-Fitora will contain the following major modules:
-
-- Dashboard
-- Nutrition
-- Meals
-- Fitness
-- Workouts
-- Progress
-- Habits
-- Learn
-- Challenges
-- League
-- Achievements
-- Profile
-
----
-
-## 🎨 UI/UX Direction
-
-Fitora follows a modern wellness SaaS design approach.
-
-Design principles:
-
-- Clean and professional
-- Simple navigation
-- Strong visual hierarchy
-- Responsive design
-- Accessible interface
-- Light theme
-- Dark theme
-- Reusable UI components
-- Data visualization where useful
-- Minimal visual clutter
-
-The UI design is being developed separately and will be
-implemented consistently across the application.
-
----
-
-## 🏗️ System Architecture
-
-Fitora will follow a layered application architecture.
+Fitora follows a decoupled, layered application architecture:
 
 ```text
-                    Frontend
-                       │
-                       │ REST API
-                       ↓
-                  Backend API
-                       │
-              ┌────────┴────────┐
-              ↓                 ↓
-          Services          Security
-              │
-              ↓
-         Repositories
-              │
-              ↓
-           Database
+┌─────────────────────────────────────────────────────────┐
+│              Frontend Client (Web / SPA)                │
+└────────────────────────────┬────────────────────────────┘
+                             │ REST API (JSON)
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│                   Backend API Layer                     │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │             Security & Authentication             │  │
+│  └─────────────────────────┬─────────────────────────┘  │
+│  ┌─────────────────────────▼─────────────────────────┐  │
+│  │           Service Layer (Business Logic)          │  │
+│  └─────────────────────────┬─────────────────────────┘  │
+│  ┌─────────────────────────▼─────────────────────────┐  │
+│  │                 Data Repositories                 │  │
+│  └─────────────────────────┬─────────────────────────┘  │
+└────────────────────────────┼────────────────────────────┘
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│               Relational Database (SQL)                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📁 Repository Structure
+
+```text
+FITORA/
+├── README.md              # Project overview and orientation
+├── CONTRIBUTING.md        # Contribution guidelines and workflow
+├── PROJECT_STATUS.md      # Development status and pending decisions
+├── .gitignore             # Ignored files for web, backend, and database
+├── .env.example           # Configuration environment template
+│
+├── frontend/              # Frontend client application (placeholder)
+│   └── .gitkeep
+├── backend/               # Backend REST API service (placeholder)
+│   └── .gitkeep
+├── database/              # Database migration and seed scripts (placeholder)
+│   └── .gitkeep
+│
+└── docs/                  # Comprehensive project documentation
+    ├── README.md          # Documentation master index
+    ├── project/           # Vision, problem, objectives, scope, requirements
+    ├── architecture/      # System design, flows, tech stack, security
+    ├── features/          # Detailed documentation for all pillars & systems
+    ├── database/          # ER diagram, schema design, and schema placeholder
+    ├── api/               # API design guidelines and endpoint specifications
+    ├── ui/                # Design system, navigation hierarchy, screen specs
+    └── development/       # Environment setup, git workflow, guidelines, roles
+```
+
+---
+
+## 📖 Documentation Index
+
+For detailed specifications and architectural documentation, explore the [docs/](docs/README.md) directory:
+
+- [Project Specifications](docs/project/README.md)
+- [Architecture & Tech Stack](docs/architecture/README.md)
+- [Feature Specifications](docs/features/README.md)
+- [Database Design & Schema](docs/database/README.md)
+- [API Specifications](docs/api/README.md)
+- [UI & Design System](docs/ui/README.md)
+- [Development Guides](docs/development/README.md)
