@@ -78,22 +78,35 @@ All API responses follow a consistent JSON envelope to ensure uniform client-sid
 | `POST` | `/auth/refresh` | Refresh an expiring access token |
 | `POST` | `/auth/logout` | Invalidate current session/token |
 
-### 2. User Profile & Biometrics (`/api/v1/users`)
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/users/profile` | Retrieve profile and calculated BMR/TDEE |
-| `PUT` | `/users/profile` | Update biometrics (weight, height, goals) |
-| `GET` | `/users/settings` | Get user preferences and theme settings |
-| `PUT` | `/users/settings` | Update user preferences |
+### 2. User Profile (`/api/v1/profile`)
+> **Approved Direction**: The existing Profile API (`/api/v1/profile`) is operational and **must remain unchanged**.
+> It provides `GET`, `POST`, and `PATCH` for core user biometrics (`age`, `height`, `weight`, `sex`).
+
+| Method | Endpoint | Description | Status |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/profile` | Retrieve existing user biometrics profile | Operational |
+| `POST` | `/api/v1/profile` | Create initial user biometrics profile | Operational |
+| `PATCH` | `/api/v1/profile` | Partially update user biometrics profile | Operational |
 
 ### 3. Pillar 1: Nutrition (`/api/v1/nutrition`)
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/nutrition/today` | Fetch today's logged meals and calorie budget |
-| `GET` | `/nutrition/foods?q={query}` | Search foods database |
-| `POST` | `/nutrition/meals` | Log a new meal (Breakfast, Lunch, Dinner, Snack) |
-| `PUT` | `/nutrition/meals/{id}` | Update logged meal or items |
-| `DELETE` | `/nutrition/meals/{id}` | Remove a logged meal |
+> **Approved Direction**: Nutrition logging is the first implementation milestone.
+> - Audience: Adults and teenagers.
+> - Meal slots: 4 standard slots (**Breakfast, Lunch, Dinner, Snacks**).
+> - Tracked metrics: **Calories, Protein, Carbohydrates, Fats** from logged foods.
+> - All energy requirements are explicitly identified as **estimates**.
+> - Energy estimation must use age-appropriate approaches; review applicability to Indian users before finalizing equations.
+> - Final equations, undisclosed sex handling, activity tiers, and personalized calorie targets remain **TODO / UNDECIDED**.
+> - AI meal recognition and unapproved gamification remain **out of scope**.
+> - Every food item has an explicit `nutrition_reference_basis` (`per_100g`, `per_100ml`, or `per_serving`).
+
+| Method | Endpoint | Query Parameters | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/nutrition/today` | None | Fetch today's logged meals and estimated energy budget |
+| `GET` | `/nutrition/foods` | `q` (string, optional)<br>`category` (string, optional)<br>`limit` (int, default 20, max 100)<br>`offset` (int, default 0) | Search foods catalog with deterministic sorting (`LOWER(name) ASC, id ASC`) |
+| `GET` | `/nutrition/foods/{id}` | Path: `id` (UUID) | Retrieve single food item details by UUID |
+| `POST` | `/nutrition/meals` | None (Request Body) | Log a meal item into one of the 4 slots (Breakfast, Lunch, Dinner, Snack) |
+| `PUT` | `/nutrition/meals/{id}` | Path: `id` (UUID) | Update logged meal or items |
+| `DELETE` | `/nutrition/meals/{id}` | Path: `id` (UUID) | Remove a logged meal |
 
 ### 4. Pillar 2: Fitness (`/api/v1/fitness`)
 | Method | Endpoint | Description |

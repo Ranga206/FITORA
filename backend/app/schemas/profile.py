@@ -1,4 +1,5 @@
 ﻿from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Annotated, Literal
 from uuid import UUID
@@ -11,6 +12,7 @@ from pydantic import (
     StrictStr,
     field_validator,
     model_validator,
+    field_serializer,
 )
 
 
@@ -73,3 +75,14 @@ class ProfileResponse(BaseModel):
     sex: Sex
     created_at: datetime
     updated_at: datetime
+
+    @field_serializer("created_at", "updated_at", return_type=str)
+    def serialize_utc_timestamps(self, value: datetime) -> str:
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+
+        return (
+            value.astimezone(timezone.utc)
+            .isoformat(timespec="microseconds")
+            .replace("+00:00", "Z")
+        )

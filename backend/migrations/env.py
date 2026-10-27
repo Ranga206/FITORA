@@ -5,6 +5,7 @@ from alembic import context
 from app.core.config import get_settings
 from app.db.base import Base
 from app.models.demo_user import DemoUser
+from app.models.food_item import FoodItem
 from app.models.profile import Profile
 from app.db.session import engine
 

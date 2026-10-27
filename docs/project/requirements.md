@@ -12,12 +12,17 @@ This document outlines the detailed functional and non-functional requirements f
 - **FR-1.3**: During onboarding, the system shall collect user biometric inputs: age, biological sex, height, current weight, target weight, and baseline activity level.
 - **FR-1.4**: The system shall compute baseline BMI context and display appropriate health screening disclaimers.
 
-### 2. Core Pillar 1: Nutrition
-- **FR-2.1**: The system shall estimate daily maintenance calories and recommended daily caloric intake based on user goals (maintenance, deficit, surplus).
-- **FR-2.2**: The system shall provide a meal planning interface categorized into Breakfast, Lunch, Dinner, and Snacks.
-- **FR-2.3**: The system shall allow users to log foods and meals with portion sizes and record calorie and macronutrient values (protein, carbs, fat).
-- **FR-2.4**: The system shall calculate running totals of daily calories and macronutrients against daily targets.
-- **FR-2.5**: The system shall display basic educational nutritional tips within the nutrition module.
+### 2. Core Pillar 1: Nutrition (First Implementation Milestone)
+- **FR-2.1**: The system shall support **adults and teenagers** as the target audience.
+- **FR-2.2**: The system shall provide a meal logging structure categorized into 4 standard slots: **Breakfast, Lunch, Dinner, and Snacks**.
+- **FR-2.3**: The system shall allow users to log foods and meals with portion sizes and record **calories, protein, carbohydrates, and fats**.
+- **FR-2.4**: The system shall calculate running daily totals of consumed calories and macronutrients against daily estimated targets.
+- **FR-2.5**: All calculated energy requirements must be explicitly identified and presented to users as **estimates**.
+- **FR-2.6**: Energy estimation must use **age-appropriate approaches** suitable for adults and teenagers.
+- **FR-2.7**: Applicability to **Indian users** must be reviewed before selecting final equations.
+- **FR-2.8**: Final equation selection, handling of undisclosed sex (`prefer_not_to_say`), activity classification, and personalized calorie-target rules remain **TODO / UNDECIDED**.
+- **FR-2.9**: The existing profile API (`/api/v1/profile`) and database schema (`profiles`) must remain **unchanged**.
+- **FR-2.10**: AI meal recognition and unapproved gamification mechanics remain strictly **out of scope**.
 
 ### 3. Core Pillar 2: Fitness
 - **FR-3.1**: The system shall maintain an exercise library detailing exercise name, target muscle group, equipment needed, and instructions.

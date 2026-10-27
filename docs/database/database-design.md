@@ -38,14 +38,20 @@ The schema is partitioned into six cohesive entity clusters:
 ```
 
 ### 1. Identity & Profiles
-- `users`: Core authentication record (email, password_hash, status, role).
-- `user_profiles`: Biometrics (age, biological sex, height, weight, target_weight, activity_level, calculated BMR/TDEE).
+- `demo_users` / `users`: Core authentication/demo user record (`id` UUID).
+- `profiles`: Biometrics (`age`, `sex`, `height`, `weight`). **Approved Direction: The existing `profiles` schema is finalized for current milestone and must remain unchanged.** Any nutrition-specific goal/preference settings will be modeled in a separate table without altering `profiles`.
 - `user_settings`: Preferences (theme, units: metric/imperial, notification preferences).
 
-### 2. Nutrition & Meals
-- `food_items`: Master catalog of food items with calorie and macro profiles per standard serving.
-- `meals`: User meal log instance (user_id, date, meal_type: BREAKFAST/LUNCH/DINNER/SNACK).
-- `meal_items`: Line items linking a meal to a food_item with quantity/serving_size.
+### 2. Nutrition & Meals (First Implementation Milestone)
+> **Approved Direction**: Nutrition logging is the first implementation milestone.
+> - Supports 4 meal slots: `BREAKFAST`, `LUNCH`, `DINNER`, `SNACK`.
+> - Tracks calories, protein, carbohydrates, and fats from logged foods.
+> - Existing profile schema remains unchanged.
+> - AI meal recognition and unapproved gamification remain out of scope.
+
+- `food_items`: Master catalog of food items storing unambiguous `nutrition_reference_basis` (`per_100g`, `per_100ml`, `per_serving`), `serving_size`, `serving_unit`, `serving_weight_g`, `serving_volume_ml`, `calories`, `protein`, `carbohydrates`, `fat`, `preparation_state`, `food_type`, and verified `source_name` / `source_code`.
+- `meals`: User meal log instance (`user_id`, `logged_date`, `meal_slot`: `BREAKFAST`/`LUNCH`/`DINNER`/`SNACK`).
+- `meal_items`: Individual food items logged in a meal, storing an **immutable historical nutrient snapshot** (`food_item_id`, `food_name_snapshot`, `logged_quantity`, `logged_unit`, `calories_snapshot`, `protein_snapshot`, `carbohydrates_snapshot`, `fat_snapshot`) so later catalog corrections never alter historical daily totals.
 
 ### 3. Fitness & Workouts
 - `exercises`: Master catalog of exercises (name, category, muscle_group, equipment, instructions).
@@ -80,7 +86,8 @@ The schema is partitioned into six cohesive entity clusters:
 
 ## 📝 Planned Decisions / TODOs
 
-- [ ] **TODO: [Database Decision]**: Finalize primary key convention: UUIDv4 vs Auto-incrementing BigInt.
-- [ ] **TODO: [Database Decision]**: Finalize database engine (PostgreSQL vs MySQL).
-- [ ] **TODO: [Database Decision]**: Determine whether nutrition food items should support user-contributed foods or remain system-curated.
+- [x] **IMPLEMENTED & TESTED: [Food Catalog Database Model]**: Implemented `food_items` PostgreSQL table with UUID primary key, numeric precision (`Numeric(6, 1)`, `Numeric(5, 1)`), indexes (`name`, `category`), check constraints for positive serving size, positive serving weight/volume, non-negative calories, protein, carbohydrates, and fat, and Alembic migration `dd5a613843df_create_food_items`.
+- [x] **IMPLEMENTED & TESTED: [System-Curated Food Catalog]**: Phase 1 catalog is strictly system-curated (`is_system=True`) and read-only. User-contributed foods are deferred to future milestones.
+- [ ] **TODO: [Database Decision]**: Finalize database engine and primary key convention across remaining future modules.
+- [ ] **TODO: [Meal Logging Tables]**: Implement `meals` and `meal_items` migration with immutable historical nutrient snapshots.
 - [ ] **TODO: [Database Decision]**: Define data retention and partitioning strategy for high-volume logs (`habit_logs`, `workout_sets`).

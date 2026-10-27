@@ -42,13 +42,20 @@ This document defines the strict boundaries of what is included within the initi
 
 ### 1. The Big 3 Core Pillars
 
-#### Pillar 1: Nutrition
-- User nutrition profile (age, gender, height, weight, activity level).
-- BMI calculation and context (explicitly treated as an educational screening metric).
-- Basal Metabolic Rate (BMR) and Total Daily Energy Expenditure (TDEE) calorie estimation.
-- Meal planning structure (Breakfast, Lunch, Dinner, Snacks).
-- Meal and calorie logging with basic macronutrient breakdown (Carbs, Protein, Fats).
-- Basic nutritional educational guidance.
+#### Pillar 1: Nutrition (First Implementation Milestone)
+> **Approved Direction**: Nutrition logging is the first core pillar implementation milestone.
+- **Target Audience**: Intended for **adults and teenagers**.
+- **Meal Structure**: Support for 4 standard meal slots: **Breakfast, Lunch, Dinner, and Snacks**.
+- **Tracked Nutrients**: Track **calories, protein, carbohydrates, and fats** from logged foods.
+- **Energy Estimation**:
+  - All calculated energy requirements must be explicitly identified as **estimates**.
+  - Must use **age-appropriate approaches** suitable for adults and teenagers.
+  - Applicability to **Indian users** must be reviewed before selecting final equations.
+- **Contract & Schema Preservation**:
+  - The existing profile API (`/api/v1/profile`) and database schema (`profiles`) must remain **unchanged**.
+  - Nutrition features consume existing profile biometrics read-only and record meal logs independently.
+- **Explicitly Out of Scope**: AI meal recognition (photo/vision parsing) and unapproved gamification mechanics remain strictly out of scope.
+- **Pending Decisions (TODO / UNDECIDED)**: Final equation selection, handling of undisclosed sex (`prefer_not_to_say`), activity classification tiers, and personalized calorie-target rules.
 
 #### Pillar 2: Fitness
 - Categorized exercise library (cardio, strength, mobility, bodyweight).

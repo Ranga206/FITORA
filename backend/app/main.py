@@ -1,5 +1,6 @@
-﻿from fastapi import FastAPI
+from fastapi import FastAPI
 
+from app.api.routes.nutrition import router as nutrition_router
 from app.api.routes.profile import router as profile_router
 
 
@@ -10,6 +11,7 @@ app = FastAPI(
 )
 
 app.include_router(profile_router)
+app.include_router(nutrition_router)
 
 
 @app.get("/health", tags=["Health"])
