@@ -1,0 +1,247 @@
+/* ==========================================================================
+   FITORA — NUTRITION CATEGORY CARDS STYLES
+   ========================================================================== */
+
+.nutrition-categories-section {
+  margin-bottom: 28px;
+}
+
+.nutrition-categories-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.categories-kicker {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.categories-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.categories-subtitle {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.view-all-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 15px;
+  background-color: var(--primary-subtle);
+  border: 1px solid var(--primary-subtle-border);
+  color: var(--primary-text);
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.view-all-pill-btn:hover {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 3 Category Cards Grid */
+.nutrition-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.nutrition-goal-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+}
+
+.nutrition-goal-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+}
+
+.nutrition-goal-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Selected state */
+.nutrition-goal-card.is-selected {
+  border-color: var(--primary);
+  background: linear-gradient(180deg, var(--primary-subtle) 0%, var(--bg-surface) 100%);
+  box-shadow: 0 0 0 2px var(--primary-ring), var(--shadow-hover);
+}
+
+.goal-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.goal-card-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  font-size: 22px;
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  transition: transform var(--transition-fast);
+}
+
+.nutrition-goal-card:hover .goal-card-icon {
+  transform: scale(1.08);
+}
+
+.goal-card-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.goal-card-count-badge strong {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.goal-card-body {
+  flex: 1;
+  margin-bottom: 18px;
+}
+
+.goal-card-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.goal-card-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.goal-card-desc {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.goal-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  transition: color var(--transition-fast);
+}
+
+.goal-action-arrow {
+  display: inline-block;
+  font-size: 15px;
+  transition: transform var(--transition-fast);
+}
+
+.nutrition-goal-card:hover .goal-action-arrow {
+  transform: translateX(4px);
+}
+
+.nutrition-goal-card.is-selected .goal-action-arrow {
+  transform: none;
+  color: var(--primary);
+}
+
+/* Category Theme Accents */
+.goal-weight_gain .goal-card-icon {
+  background-color: #fff8e8;
+  border-color: #fce8be;
+}
+
+[data-theme="dark"] .goal-weight_gain .goal-card-icon {
+  background-color: #2b2311;
+  border-color: #57461e;
+}
+
+.goal-weight_loss .goal-card-icon {
+  background-color: #edf6ee;
+  border-color: #d3e7d6;
+}
+
+[data-theme="dark"] .goal-weight_loss .goal-card-icon {
+  background-color: #182c1f;
+  border-color: #254631;
+}
+
+.goal-diabetic_friendly .goal-card-icon {
+  background-color: #f1f7f6;
+  border-color: #d2e9e6;
+}
+
+[data-theme="dark"] .goal-diabetic_friendly .goal-card-icon {
+  background-color: #142826;
+  border-color: #1f4743;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 980px) {
+  .nutrition-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .nutrition-goal-card {
+    padding: 18px;
+  }
+}

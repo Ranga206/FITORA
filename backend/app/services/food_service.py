@@ -1,3 +1,4 @@
+from typing import Any
 from decimal import Decimal, ROUND_HALF_UP
 from uuid import UUID
 
@@ -8,11 +9,96 @@ from app.models.food_item import FoodItem
 from app.schemas.food import MASS_UNITS, VOLUME_UNITS
 
 
+def classify_food_item(food: FoodItem) -> list[str]:
+    """Deterministically classifies an existing food item into goal categories.
+
+    Categories:
+    - 'weight_gain': Energy-dense (>=250 kcal/100g) or nutrient-dense proteins/fats
+    - 'weight_loss': High satiety, low-to-moderate calorie density (<=140 kcal/100g) or lean protein
+    - 'diabetic_friendly': Low available carbs (<=10g) or high-fiber blunting glycemic impact
+    """
+    cal = float(food.calories)
+    p = float(food.protein)
+    c = float(food.carbohydrates)
+    f = float(food.fat)
+    cat = food.category
+    name = food.name.lower()
+    prep = food.preparation_state.lower()
+
+    categories = []
+
+    # 1. Weight Gain
+    if cal >= 250:
+        categories.append("weight_gain")
+    elif cal >= 150 and (p >= 15 or f >= 10):
+        categories.append("weight_gain")
+    elif cat == "Nuts & Seeds":
+        categories.append("weight_gain")
+    elif "butter" in name or "whole milk" in name or "cottage cheese" in name:
+        categories.append("weight_gain")
+
+    # 2. Weight Loss
+    if cal <= 140:
+        categories.append("weight_loss")
+    elif p >= 20 and cal <= 180:
+        categories.append("weight_loss")
+    elif (cat in ["Vegetables", "Fruits"]) and cal <= 100:
+        categories.append("weight_loss")
+
+    # 3. Diabetic-Friendly
+    is_refined = "white rice" in name or "wheat flour" in name or "potatoes" in name
+    if not is_refined:
+        if c <= 10.0:
+            categories.append("diabetic_friendly")
+        elif cat == "Nuts & Seeds" and c <= 25.0:
+            categories.append("diabetic_friendly")
+        elif prep == "boiled" and cat == "Legumes & Pulses":
+            categories.append("diabetic_friendly")
+        elif cat == "Fruits" and c <= 15.0 and ("apple" in name or "guava" in name or "papaya" in name):
+            categories.append("diabetic_friendly")
+        elif "chia" in name:
+            categories.append("diabetic_friendly")
+
+    return categories
+
+
+def get_nutrition_goal_summary(db: Session) -> list[dict[str, Any]]:
+    """Returns summary counts and metadata for the three primary nutrition categories."""
+    query = select(FoodItem).where(FoodItem.data_review_status == "verified")
+    all_items = list(db.scalars(query).all())
+    counts = {"weight_gain": 0, "weight_loss": 0, "diabetic_friendly": 0}
+    for item in all_items:
+        for cat in classify_food_item(item):
+            counts[cat] += 1
+
+    return [
+        {
+            "id": "weight_gain",
+            "name": "Weight Gain",
+            "description": "Discover nourishing foods to support healthy weight gain.",
+            "count": counts["weight_gain"],
+        },
+        {
+            "id": "weight_loss",
+            "name": "Weight Loss",
+            "description": "Explore balanced, nutrient-rich foods for your weight-management goals.",
+            "count": counts["weight_loss"],
+        },
+        {
+            "id": "diabetic_friendly",
+            "name": "Diabetic-Friendly Foods",
+            "description": "Explore balanced food options to support mindful blood-glucose management.",
+            "count": counts["diabetic_friendly"],
+        },
+    ]
+
+
 def get_published_foods(
     db: Session,
     *,
     q: str | None = None,
     category: str | None = None,
+    goal: str | None = None,
     limit: int = 20,
     offset: int = 0,
 ) -> tuple[list[FoodItem], int]:
@@ -25,12 +111,20 @@ def get_published_foods(
     if category and category.strip():
         query = query.where(func.lower(FoodItem.category) == category.strip().lower())
 
+    query = query.order_by(func.lower(FoodItem.name).asc(), FoodItem.id.asc())
+
+    if goal and goal.strip():
+        target_goal = goal.strip().lower().replace("-", "_")
+        all_items = list(db.scalars(query).all())
+        filtered = [item for item in all_items if target_goal in classify_food_item(item)]
+        total = len(filtered)
+        items = filtered[offset : offset + limit]
+        return items, total
+
     count_query = select(func.count()).select_from(query.subquery())
     total = db.scalar(count_query) or 0
 
-    query = query.order_by(func.lower(FoodItem.name).asc(), FoodItem.id.asc())
     query = query.offset(offset).limit(limit)
-
     items = list(db.scalars(query).all())
     return items, total
 

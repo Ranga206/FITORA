@@ -1,4 +1,8 @@
 import type { FoodItem } from '../../types/food'
+import {
+  classifyFood,
+  NUTRITION_CATEGORIES,
+} from '../../services/nutritionClassifier'
 
 interface FoodCardProps {
   food: FoodItem
@@ -33,6 +37,7 @@ function formatReferenceBasis(basis: string): string {
 export function FoodCard({ food, onSelect }: FoodCardProps) {
   const categoryIcon = getCategoryIcon(food.category)
   const referenceLabel = formatReferenceBasis(food.nutrition_reference_basis)
+  const matchedGoals = classifyFood(food)
 
   return (
     <article
@@ -75,6 +80,25 @@ export function FoodCard({ food, onSelect }: FoodCardProps) {
           )}
         </div>
       </div>
+
+      {/* Goal Categories Badges */}
+      {matchedGoals.length > 0 && (
+        <div className="food-card-goals-row" aria-label="Goal categories">
+          {matchedGoals.map((goal) => {
+            const meta = NUTRITION_CATEGORIES[goal]
+            return (
+              <span
+                key={goal}
+                className={`goal-tag-pill goal-tag-${goal}`}
+                title={`${meta.name}: ${meta.description}`}
+              >
+                <span className="goal-tag-icon" aria-hidden="true">{meta.icon}</span>
+                <span>{meta.shortName}</span>
+              </span>
+            )
+          })}
+        </div>
+      )}
 
       <div className="food-card-nutrients">
         <div className="nutrient-cell nutrient-calories">

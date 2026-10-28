@@ -1,9 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FoodItem, FoodCatalogListResponse } from '../../types/food'
+import {
+  NUTRITION_CATEGORIES,
+  filterByNutritionCategory,
+  getCategoryCounts,
+  type NutritionCategory,
+} from '../../services/nutritionClassifier'
 import { FoodCard } from './FoodCard'
 import { FoodDetailModal } from './FoodDetailModal'
 import { CatalogStats } from './CatalogStats'
 import { CatalogFilters } from './CatalogFilters'
+import { NutritionCategoryCards } from './NutritionCategoryCards'
 import './FoodCatalog.css'
 
 interface FoodCatalogProps {
@@ -15,6 +22,9 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
   const [allFoods, setAllFoods] = useState<FoodItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Nutrition Goal Category selection ('all' | 'weight_gain' | 'weight_loss' | 'diabetic_friendly')
+  const [selectedGoalCategory, setSelectedGoalCategory] = useState<NutritionCategory | 'all'>('all')
 
   // Interactive filtering & search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -34,7 +44,7 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
 
     async function loadCatalog() {
       try {
-        // Query the existing Nutrition Food Catalog endpoint with maximum allowed limit (100)
+        // Query the Nutrition Food Catalog endpoint with maximum allowed limit (100)
         const response = await fetch('/api/v1/nutrition/foods?limit=100&offset=0')
         if (!response.ok) {
           throw new Error(`Failed to load food catalog (HTTP ${response.status}). Ensure the backend is running.`)
@@ -62,7 +72,10 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
     }
   }, [])
 
-  // Calculate real categories and counts directly from loaded API records
+  // Calculate dynamic counts for the 3 Nutrition Goal categories from loaded foods
+  const goalCounts = useMemo(() => getCategoryCounts(allFoods), [allFoods])
+
+  // Calculate food group categories and counts directly from loaded API records
   const categoryCounts = useMemo(() => {
     const countsMap = new Map<string, number>()
     allFoods.forEach((food) => {
@@ -76,15 +89,22 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
 
   const categoryNames = useMemo(() => categoryCounts.map((c) => c.name), [categoryCounts])
 
-  // Filtered items based on current search, category, and preparation state
+  // Filtered items based on goal category, search query, food category, and prep state
   const filteredFoods = useMemo(() => {
     let result = allFoods
 
+    // 1. Goal Category Filter (Weight Gain, Weight Loss, Diabetic-Friendly)
+    if (selectedGoalCategory !== 'all') {
+      result = filterByNutritionCategory(result, selectedGoalCategory)
+    }
+
+    // 2. Food Group Category Filter
     if (selectedCategory) {
       const catLower = selectedCategory.toLowerCase()
       result = result.filter((f) => f.category.toLowerCase() === catLower)
     }
 
+    // 3. Search Query Filter
     if (searchQuery.trim()) {
       const queryLower = searchQuery.trim().toLowerCase()
       result = result.filter(
@@ -95,14 +115,20 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
       )
     }
 
+    // 4. Preparation State Filter
     if (prepStateFilter !== 'all') {
       result = result.filter((f) => f.preparation_state.toLowerCase() === prepStateFilter)
     }
 
     return result
-  }, [allFoods, selectedCategory, searchQuery, prepStateFilter])
+  }, [allFoods, selectedGoalCategory, selectedCategory, searchQuery, prepStateFilter])
 
-  // Explicit handlers that reset page index when filters change
+  // Reset page index when filters change
+  function handleGoalCategoryChange(goal: NutritionCategory | 'all') {
+    setSelectedGoalCategory(goal)
+    setCurrentPage(1)
+  }
+
   function handleSearchChange(query: string) {
     setSearchQuery(query)
     setCurrentPage(1)
@@ -123,6 +149,14 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
     setCurrentPage(1)
   }
 
+  function handleResetFilters() {
+    setSearchQuery('')
+    setSelectedGoalCategory('all')
+    setSelectedCategory(null)
+    setPrepStateFilter('all')
+    setCurrentPage(1)
+  }
+
   // Paginated slice for current page
   const totalFiltered = filteredFoods.length
   const totalPages = Math.max(1, Math.ceil(totalFiltered / pageSize))
@@ -131,14 +165,15 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
     return filteredFoods.slice(startIndex, startIndex + pageSize)
   }, [filteredFoods, currentPage, pageSize])
 
-  const hasActiveFilters = searchQuery.trim() !== '' || selectedCategory !== null || prepStateFilter !== 'all'
+  const hasActiveFilters =
+    searchQuery.trim() !== '' ||
+    selectedGoalCategory !== 'all' ||
+    selectedCategory !== null ||
+    prepStateFilter !== 'all'
 
-  function handleResetFilters() {
-    setSearchQuery('')
-    setSelectedCategory(null)
-    setPrepStateFilter('all')
-    setCurrentPage(1)
-  }
+  // Metadata for active goal category banner
+  const activeGoalMeta =
+    selectedGoalCategory !== 'all' ? NUTRITION_CATEGORIES[selectedGoalCategory] : null
 
   // Check if any displayed record has USDA provenance
   const hasUsdaRecords = useMemo(() => {
@@ -154,7 +189,7 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
             type="button"
             className="back-nav-button"
             onClick={onBackToDashboard}
-            aria-label="Back to Nutrition Dashboard"
+            aria-label="Back to Dashboard Workspace"
           >
             <span className="back-arrow" aria-hidden="true">←</span>
             <span>Back to Dashboard</span>
@@ -163,11 +198,11 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
           <div className="catalog-header-badges">
             <span className="live-api-badge">
               <span className="badge-live-pulse" aria-hidden="true" />
-              <span>PostgreSQL · Live Catalog</span>
+              <span>3 Nutrition Categories</span>
             </span>
             <span className="verified-provenance-badge">
               <span className="badge-shield-icon" aria-hidden="true">✓</span>
-              <span>100% Verified Foods</span>
+              <span>{allFoods.length} Verified Foods</span>
             </span>
           </div>
         </div>
@@ -176,28 +211,75 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
           <div className="hero-text-block">
             <div className="catalog-kicker-row">
               <span className="kicker-leaf" aria-hidden="true">🥗</span>
-              <span className="catalog-kicker">NUTRITION PILLAR SHOWCASE</span>
+              <span className="catalog-kicker">
+                {activeGoalMeta ? `NUTRITION CATEGORY · ${activeGoalMeta.tag}` : 'EAT BETTER • MOVE BETTER • LIVE BETTER'}
+              </span>
             </div>
             <h1 className="catalog-hero-title">
-              Fitora Food Catalog
+              {activeGoalMeta ? activeGoalMeta.name : 'Nutrition'}
             </h1>
             <p className="catalog-hero-subtitle">
-              Explore the verified foods powering your nutrition tracking and energy balance.
+              {activeGoalMeta
+                ? activeGoalMeta.description
+                : 'Find foods that align with your nutrition goals.'}
             </p>
           </div>
 
-          <div className="hero-accent-card" aria-hidden="true">
-            <div className="accent-circle-art" />
-            <div className="accent-inner-badge">
-              <span className="accent-badge-icon">🌿</span>
-              <div className="accent-badge-copy">
-                <strong>USDA FDC CC0</strong>
-                <small>Open Nutrition Data</small>
+          {selectedGoalCategory !== 'all' ? (
+            <div className="hero-category-action-box">
+              <button
+                type="button"
+                className="category-return-btn"
+                onClick={() => setSelectedGoalCategory('all')}
+                aria-label="Return to all nutrition categories"
+              >
+                <span>← All Categories</span>
+              </button>
+            </div>
+          ) : (
+            <div className="hero-accent-card" aria-hidden="true">
+              <div className="accent-circle-art" />
+              <div className="accent-inner-badge">
+                <span className="accent-badge-icon">🌿</span>
+                <div className="accent-badge-copy">
+                  <strong>3 Focus Categories</strong>
+                  <small>Gain • Loss • Diabetic</small>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
+
+        {/* Selected Category Educational Banner & Safety Notice */}
+        {activeGoalMeta && (
+          <div
+            className={`category-focus-banner banner-${selectedGoalCategory}`}
+            role="region"
+            aria-label={`${activeGoalMeta.name} dietary criteria and guidance`}
+          >
+            <div className="focus-banner-criteria">
+              <span className="banner-icon" aria-hidden="true">
+                {activeGoalMeta.icon}
+              </span>
+              <div className="banner-content">
+                <strong>{activeGoalMeta.criteriaTitle}</strong>
+                <p>{activeGoalMeta.criteriaDescription}</p>
+              </div>
+            </div>
+            <div className="focus-banner-safety">
+              <span className="safety-icon" aria-hidden="true">ℹ</span>
+              <span>{activeGoalMeta.safetyDisclaimer}</span>
+            </div>
+          </div>
+        )}
       </header>
+
+      {/* 3 Nutrition Category Cards Section */}
+      <NutritionCategoryCards
+        categoryCounts={goalCounts}
+        selectedCategory={selectedGoalCategory}
+        onSelectCategory={handleGoalCategoryChange}
+      />
 
       {/* Summary Statistics Section */}
       <CatalogStats
@@ -211,6 +293,9 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
       <CatalogFilters
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
+        selectedGoalCategory={selectedGoalCategory}
+        onGoalCategoryChange={handleGoalCategoryChange}
+        goalCounts={goalCounts}
         selectedCategory={selectedCategory}
         onCategoryChange={handleCategoryChange}
         prepStateFilter={prepStateFilter}
@@ -279,6 +364,9 @@ export function FoodCatalog({ onBackToDashboard }: FoodCatalogProps) {
                   Showing <strong>{(currentPage - 1) * pageSize + 1}</strong> to{' '}
                   <strong>{Math.min(currentPage * pageSize, totalFiltered)}</strong> of{' '}
                   <strong>{totalFiltered}</strong> foods
+                  {selectedGoalCategory !== 'all' && (
+                    <span> in <em>{NUTRITION_CATEGORIES[selectedGoalCategory].name}</em></span>
+                  )}
                 </div>
 
                 <div className="pagination-buttons">

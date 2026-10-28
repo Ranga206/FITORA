@@ -1,5 +1,9 @@
 import { useEffect, useRef } from 'react'
 import type { FoodItem } from '../../types/food'
+import {
+  classifyFood,
+  NUTRITION_CATEGORIES,
+} from '../../services/nutritionClassifier'
 
 interface FoodDetailModalProps {
   food: FoodItem | null
@@ -9,11 +13,11 @@ interface FoodDetailModalProps {
 function formatReferenceBasis(basis: string): string {
   switch (basis) {
     case 'per_100g':
-      return 'Per 100 grams (100 g)'
+      return 'Per 100 grams (mass)'
     case 'per_100ml':
-      return 'Per 100 millilitres (100 ml)'
+      return 'Per 100 millilitres (volume)'
     case 'per_serving':
-      return 'Per specified serving'
+      return 'Per discrete serving unit'
     default:
       return basis.replace('_', ' ')
   }
@@ -22,26 +26,24 @@ function formatReferenceBasis(basis: string): string {
 export function FoodDetailModal({ food, onClose }: FoodDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
 
+  // Close on Escape key press
   useEffect(() => {
-    if (!food) return
-
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
         onClose()
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    // Prevent body scroll when modal is open
-    const originalOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-
-    // Focus the modal for keyboard accessibility
-    modalRef.current?.focus()
+    if (food) {
+      document.addEventListener('keydown', handleKeyDown)
+      // Lock background scrolling while modal is open
+      document.body.style.overflow = 'hidden'
+      modalRef.current?.focus()
+    }
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = originalOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
     }
   }, [food, onClose])
 
@@ -56,6 +58,8 @@ export function FoodDetailModal({ food, onClose }: FoodDetailModalProps) {
   const proteinPct = totalMacroKcal > 0 ? Math.round((proteinKcal / totalMacroKcal) * 100) : 0
   const carbsPct = totalMacroKcal > 0 ? Math.round((carbsKcal / totalMacroKcal) * 100) : 0
   const fatPct = totalMacroKcal > 0 ? Math.round((fatKcal / totalMacroKcal) * 100) : 0
+
+  const matchedGoals = classifyFood(food)
 
   return (
     <div
@@ -101,15 +105,49 @@ export function FoodDetailModal({ food, onClose }: FoodDetailModalProps) {
         </header>
 
         <div className="catalog-modal-body">
-          {/* Main 4 Nutrients Grid */}
-          <section className="modal-macros-section" aria-label="Nutritional Breakdown">
+          {/* Nutrition Goal Classifications */}
+          <section className="modal-goals-section">
+            <h3 className="section-subheading">Goal-Based Nutrition Categories</h3>
+            {matchedGoals.length === 0 ? (
+              <p className="no-goals-note">
+                Tracked as a neutral baseline dietary ingredient without active goal-specific flags.
+              </p>
+            ) : (
+              <div className="modal-goals-grid">
+                {matchedGoals.map((goal) => {
+                  const meta = NUTRITION_CATEGORIES[goal]
+                  return (
+                    <div key={goal} className={`modal-goal-card modal-goal-${goal}`}>
+                      <div className="modal-goal-header">
+                        <span className="modal-goal-icon" aria-hidden="true">{meta.icon}</span>
+                        <div className="modal-goal-title-wrap">
+                          <strong>{meta.name}</strong>
+                          <span className="modal-goal-tag">{meta.tag}</span>
+                        </div>
+                      </div>
+                      <p className="modal-goal-criteria">{meta.criteriaDescription}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+            <div className="modal-dietary-disclaimer">
+              <span className="disclaimer-icon" aria-hidden="true">ℹ</span>
+              <span>
+                <strong>Dietary Guidance:</strong> Classifications are algorithmically determined from verified macronutrient metrics. Not intended as medical diagnosis or treatment.
+              </span>
+            </div>
+          </section>
+
+          {/* Primary Macronutrient Highlights */}
+          <section className="modal-macros-grid">
             <div className="macro-card macro-calories">
               <span className="macro-label">Energy</span>
               <div className="macro-val-row">
                 <span className="macro-number">{Number(food.calories).toFixed(0)}</span>
                 <span className="macro-unit">kcal</span>
               </div>
-              <span className="macro-sub">Total Calories</span>
+              <span className="macro-sub">Total energy content</span>
             </div>
 
             <div className="macro-card macro-protein">
@@ -228,34 +266,22 @@ export function FoodDetailModal({ food, onClose }: FoodDetailModalProps) {
               </div>
               <div className="provenance-cell">
                 <span className="prov-label">Internal Catalog UUID</span>
-                <span className="prov-val uuid-val" title={food.id}>{food.id}</span>
-              </div>
-            </div>
-
-            <div className="verification-callout">
-              <span className="callout-icon" aria-hidden="true">🛡️</span>
-              <div className="callout-content">
-                <strong>Integrity Validation Note</strong>
-                <p>
-                  This record strictly obeys Fitora Nutrition conditional constraints:
-                  all 4 nutrients are verified non-negative, volume inference from mass is disallowed,
-                  and mass-volume conversions require explicit documented equivalence.
-                </p>
+                <span className="prov-val mono-small">{food.id}</span>
               </div>
             </div>
           </section>
         </div>
 
         <footer className="catalog-modal-footer">
-          <span className="modal-footer-note">
-            Read-only presentation mode · Live API record
+          <span className="modal-provenance-footnote">
+            Nutritional integrity verified under Fitora production constraints.
           </span>
           <button
             type="button"
-            className="secondary-button"
+            className="primary-button"
             onClick={onClose}
           >
-            Close Details
+            Done
           </button>
         </footer>
       </div>

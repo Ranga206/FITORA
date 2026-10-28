@@ -222,6 +222,29 @@
   font-weight: 600;
 }
 
+.login-topbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-subtle);
+  border: 1px solid var(--primary-subtle-border);
+  color: var(--primary-text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.login-topbar-btn:hover {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
 .topbar-actions {
   display: flex;
   align-items: center;
