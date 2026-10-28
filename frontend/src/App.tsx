@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { FoodCatalog } from './components/FoodCatalog/FoodCatalog'
+import { FitnessView } from './components/Fitness/FitnessView'
 import './App.css'
 
 type Profile = {
@@ -21,7 +22,7 @@ const emptyProfile: Profile = {
 
 const THEME_STORAGE_KEY = 'fitora_theme'
 type Theme = 'light' | 'dark'
-type View = 'dashboard' | 'food-catalog'
+type View = 'dashboard' | 'food-catalog' | 'fitness'
 
 function getInitialView(): View {
   if (typeof window === 'undefined') return 'dashboard'
@@ -34,6 +35,16 @@ function getInitialView(): View {
     hash === '#nutrition-catalog'
   ) {
     return 'food-catalog'
+  }
+  if (
+    hash === '#fitness' ||
+    hash === '#/fitness' ||
+    hash === '#workout' ||
+    hash === '#fitness-demo' ||
+    hash.startsWith('#fitness') ||
+    hash.startsWith('#/fitness')
+  ) {
+    return 'fitness'
   }
   return 'dashboard'
 }
@@ -122,6 +133,7 @@ function MoonIcon() {
 function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
   const [currentView, setCurrentView] = useState<View>(getInitialView)
+  const [isWorkoutActive, setIsWorkoutActive] = useState(false)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [form, setForm] = useState<Profile>(emptyProfile)
   const [editing, setEditing] = useState(false)
@@ -134,6 +146,7 @@ function App() {
   useEffect(() => {
     function handleHashChange() {
       const hash = window.location.hash.toLowerCase()
+      let targetView: View = 'dashboard'
       if (
         hash === '#food-catalog' ||
         hash === '#catalog' ||
@@ -141,20 +154,64 @@ function App() {
         hash === '#/nutrition/foods' ||
         hash === '#nutrition-catalog'
       ) {
-        setCurrentView('food-catalog')
-      } else {
-        setCurrentView('dashboard')
+        targetView = 'food-catalog'
+      } else if (
+        hash === '#fitness' ||
+        hash === '#/fitness' ||
+        hash === '#workout' ||
+        hash === '#fitness-demo' ||
+        hash.startsWith('#fitness') ||
+        hash.startsWith('#/fitness')
+      ) {
+        targetView = 'fitness'
       }
+
+      if (currentView === 'fitness' && targetView !== 'fitness' && isWorkoutActive) {
+        const confirmLeave = window.confirm(
+          'You have a workout in progress. Leaving now will discard your active session. Do you want to leave?'
+        )
+        if (!confirmLeave) {
+          // Revert hash without leaving the active workout
+          window.history.pushState(null, '', '#fitness')
+          return
+        }
+        setIsWorkoutActive(false)
+      }
+
+      setCurrentView(targetView)
     }
 
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
-  }, [])
+  }, [currentView, isWorkoutActive])
+
+  // Guard against browser refresh or tab close while a workout is active
+  useEffect(() => {
+    if (!isWorkoutActive) return
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isWorkoutActive])
 
   function navigateTo(view: View) {
+    if (currentView === 'fitness' && view !== 'fitness' && isWorkoutActive) {
+      const confirmLeave = window.confirm(
+        'You have a workout in progress. Leaving now will discard your active session. Do you want to leave?'
+      )
+      if (!confirmLeave) {
+        return
+      }
+      setIsWorkoutActive(false)
+    }
+
     setCurrentView(view)
     if (view === 'food-catalog') {
       window.location.hash = 'food-catalog'
+    } else if (view === 'fitness') {
+      window.location.hash = 'fitness'
     } else {
       window.location.hash = 'dashboard'
     }
@@ -258,7 +315,15 @@ function App() {
   return (
     <div className="app-shell">
       <aside className="sidebar" aria-label="Main Navigation">
-        <a className="brand" href="#" aria-label="Fitora Home">
+        <a
+          className="brand"
+          href="#dashboard"
+          onClick={(e) => {
+            e.preventDefault()
+            navigateTo('dashboard')
+          }}
+          aria-label="Fitora Home"
+        >
           <span className="brand-mark" aria-hidden="true">f.</span>
           <span>fitora<span className="brand-dot">.</span></span>
         </a>
@@ -290,10 +355,18 @@ function App() {
             <span>Food Catalog</span>
             <small className="nav-pill">50 Verified</small>
           </a>
-          <a className="nav-item" href="#fitness">
+          <a
+            className={`nav-item ${currentView === 'fitness' ? 'active' : ''}`}
+            href="#fitness"
+            onClick={(e) => {
+              e.preventDefault()
+              navigateTo('fitness')
+            }}
+            aria-current={currentView === 'fitness' ? 'page' : undefined}
+          >
             <span className="nav-icon" aria-hidden="true">↗</span>
             <span>Fitness</span>
-            <small className="nav-pill">Preview</small>
+            <small className="nav-pill">Demo</small>
           </a>
           <a className="nav-item" href="#awareness">
             <span className="nav-icon" aria-hidden="true">✳</span>
@@ -332,6 +405,21 @@ function App() {
                 <span className="breadcrumb-sep" aria-hidden="true">/</span>
                 <span className="breadcrumb-current">Food Catalog</span>
               </>
+            ) : currentView === 'fitness' ? (
+              <>
+                <a
+                  href="#dashboard"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    navigateTo('dashboard')
+                  }}
+                  className="breadcrumb-link"
+                >
+                  Dashboard
+                </a>
+                <span className="breadcrumb-sep" aria-hidden="true">/</span>
+                <span className="breadcrumb-current">Fitness</span>
+              </>
             ) : (
               <span className="breadcrumb-current">Dashboard</span>
             )}
@@ -361,6 +449,12 @@ function App() {
 
         {currentView === 'food-catalog' ? (
           <FoodCatalog onBackToDashboard={() => navigateTo('dashboard')} />
+        ) : currentView === 'fitness' ? (
+          <FitnessView
+            onBackToDashboard={() => navigateTo('dashboard')}
+            onWorkoutActiveChange={setIsWorkoutActive}
+            isWorkoutActive={isWorkoutActive}
+          />
         ) : (
           <>
             <section className="welcome" aria-label="Welcome banner">
@@ -410,17 +504,30 @@ function App() {
             </div>
           </article>
 
-          <article className="pillar-card fitness-card" id="fitness">
+          <article
+            className="pillar-card fitness-card clickable-pillar"
+            id="fitness"
+            onClick={() => navigateTo('fitness')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                navigateTo('fitness')
+              }
+            }}
+            title="Open Fitness Demo"
+          >
             <div className="pillar-top">
               <span className="pillar-icon" aria-hidden="true">↗</span>
-              <span className="status-pill">Preview</span>
+              <span className="status-pill status-pill-active">Explore Demo</span>
             </div>
             <p className="card-kicker">02 / MOVE</p>
             <h2>Fitness</h2>
             <p>Explore movement, exercise guidance, and consistency.</p>
             <div className="pillar-bottom">
-              <span>Workout guidance</span>
-              <span aria-hidden="true">↗</span>
+              <span>Workout guidance &amp; tracker</span>
+              <span aria-hidden="true">→</span>
             </div>
           </article>
 

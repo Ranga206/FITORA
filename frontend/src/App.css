@@ -479,6 +479,28 @@
   letter-spacing: 0.3px;
 }
 
+.status-pill-active {
+  background: var(--pillar-nutrition-tag-bg);
+  border-color: var(--pillar-nutrition-tag-border);
+  color: var(--pillar-nutrition-tag-fg);
+}
+
+.fitness-card .status-pill-active {
+  background: var(--pillar-fitness-tag-bg);
+  border-color: var(--pillar-fitness-tag-border);
+  color: var(--pillar-fitness-tag-fg);
+}
+
+.clickable-pillar {
+  cursor: pointer;
+  user-select: none;
+}
+
+.clickable-pillar:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
 .card-kicker {
   margin: 18px 0 6px;
   font-size: 10.5px;
